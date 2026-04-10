@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>VideoX Player</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+
+  :root {
+    --bg: #080c12;
+    --surface: #0d1520;
+    --card: #111d2e;
+    --accent: #00d4ff;
+    --accent2: #ff4d6d;
+    --text: #e8f4ff;
+    --muted: #4a6380;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 50% at 20% 10%, rgba(0,212,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255,77,109,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 2;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0,212,255,0.15);
+  }
+
+  .logo-icon {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--accent), #0077ff);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    box-shadow: var(--glow);
+  }
+
+  .logo-text { font-size: 26px; font-weight: 700; letter-spacing: 2px; }
+  .logo-text span { color: var(--accent); }
+
+  /* ===== ADMIN PANEL ===== */
+  .admin-toggle {
+    margin-left: auto;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background 0.2s;
+  }
+  .admin-toggle:hover { background: rgba(0,212,255,0.15); }
+
+  .admin-panel {
+    background: var(--card);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .admin-panel.open { display: block; }
+
+  .admin-title {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-family: 'Share Tech Mono', monospace;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .field-group {
+    margin-bottom: 14px;
+  }
+
+  .field-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .field-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .field-input:focus { border-color: var(--accent); }
+  .field-input::placeholder { color: var(--muted); }
+
+  .add-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #0099cc);
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    color: #000;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .add-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* ===== VIDEO LIST ===== */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .video-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .video-card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+
+  .video-card:hover {
+    border-color: rgba(0,212,255,0.3);
+    background: rgba(0,212,255,0.04);
+    transform: translateX(4px);
+  }
+
+  .video-card.playing {
+    border-color: var(--accent);
+    background: rgba(0,212,255,0.06);
+  }
+
+  .play-icon {
+    width: 38px; height: 38px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .video-card.playing .play-icon {
+    background: var(--accent);
+    color: #000;
+  }
+
+  .card-info { flex: 1; min-width: 0; }
+
+  .card-name {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-source {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  .delete-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+  .delete-btn:hover { color: var(--accent2); background: rgba(255,77,109,0.1); }
+
+  /* ===== VIDEO PLAYER ===== */
+  .video-wrapper {
+    background: #000;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(0,212,255,0.15);
+    display: none;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6), var(--glow);
+    margin-bottom: 12px;
+  }
+  .video-wrapper.active { display: block; }
+
+  #mainVideo {
+    width: 100%;
+    display: block;
+    max-height: 65vh;
+    background: #000;
+  }
+
+  /* Now playing bar */
+  .now-playing {
+    background: var(--card);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .now-playing.active { display: flex; }
+
+  .np-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  .np-dot.paused { background: var(--muted); box-shadow: none; animation: none; }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.5; transform:scale(0.8); }
+  }
+
+  .np-name { font-size: 14px; font-weight: 600; flex: 1; }
+  .np-status {
+    font-size: 11px;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--muted);
+    font-size: 14px;
+    border: 1px dashed rgba(255,255,255,0.08);
+    border-radius: 12px;
+  }
+  .empty-state .big { font-size: 30px; margin-bottom: 8px; }
+
+  @media (max-width: 480px) {
+    .card-name { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo-icon">▶</div>
+    <div class="logo-text">Video<span>X</span></div>
+    <button class="admin-toggle" onclick="toggleAdmin()">⚙ ADD VIDEO</button>
+  </header>
+
+  <!-- Admin Panel -->
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-title">🔧 Video Add Koro</div>
+    <div class="field-group">
+      <div class="field-label">▸ Video Name (User dekhbe ei naam)</div>
+      <input type="text" class="field-input" id="videoName" placeholder="jemon: Avengers Episode 1" />
+    </div>
+    <div class="field-group">
+      <div class="field-label">▸ Video Link (Hidden thakbe)</div>
+      <input type="url" class="field-input" id="videoLink" placeholder="https://files.catbox.moe/....mp4" />
+    </div>
+    <button class="add-btn" onclick="addVideo()">+ LIST E ADD KORO</button>
+  </div>
+
+  <!-- Now Playing -->
+  <div class="video-wrapper" id="videoWrapper">
+    <video id="mainVideo" controls playsinline preload="metadata"></video>
+  </div>
+  <div class="now-playing" id="nowPlaying">
+    <div class="np-dot" id="npDot"></div>
+    <div class="np-name" id="npName"></div>
+    <div class="np-status" id="npStatus">PLAYING</div>
+  </div>
+
+  <!-- Video List -->
+  <div class="section-label">▸ Video List</div>
+  <div class="video-list" id="videoList"></div>
+</div>
+
+<script>
+  // Default videos (tumi aro add korte paro)
+  let videos = JSON.parse(localStorage.getItem('vx_videos') || 'null') || [
+    { id: 1, name: "Sample Video", url: "https://files.catbox.moe/lhbwvu.mp4" }
+  ];
+
+  let currentId = null;
+
+  function save() {
+    localStorage.setItem('vx_videos', JSON.stringify(videos));
+  }
+
+  function render() {
+    const list = document.getElementById('videoList');
+    if (videos.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div class="big">🎬</div>Kono video nai. ADD VIDEO button diye add koro!</div>`;
+      return;
+    }
+    list.innerHTML = videos.map(v => `
+      <div class="video-card ${currentId === v.id ? 'playing' : ''}" onclick="playVideo(${v.id})">
+        <div class="play-icon">${currentId === v.id ? '▶' : '▷'}</div>
+        <div class="card-info">
+          <div class="card-name">${escHtml(v.name)}</div>
+          <div class="card-source">🔒 Private Source</div>
+        </div>
+        <button class="delete-btn" onclick="deleteVideo(event, ${v.id})">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function playVideo(id) {
+    const v = videos.find(x => x.id === id);
+    if (!v) return;
+    currentId = id;
+
+    const videoEl = document.getElementById('mainVideo');
+    const wrapper = document.getElementById('videoWrapper');
+    const nowPlaying = document.getElementById('nowPlaying');
+    const npName = document.getElementById('npName');
+    const npDot = document.getElementById('npDot');
+    const npStatus = document.getElementById('npStatus');
+
+    videoEl.src = v.url;
+    wrapper.classList.add('active');
+    nowPlaying.classList.add('active');
+    npName.textContent = v.name; // শুধু name দেখাবে, URL না
+    npStatus.textContent = 'LOADING...';
+    npDot.classList.remove('paused');
+
+    videoEl.load();
+    videoEl.play().catch(() => {});
+
+    wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    render();
+  }
+
+  function addVideo() {
+    const name = document.getElementById('videoName').value.trim();
+    const url = document.getElementById('videoLink').value.trim();
+    if (!name || !url) { alert('Name আর Link দুটোই দাও!'); return; }
+
+    videos.push({ id: Date.now(), name, url });
+    save();
+    render();
+
+    document.getElementById('videoName').value = '';
+    document.getElementById('videoLink').value = '';
+    document.getElementById('adminPanel').classList.remove('open');
+  }
+
+  function deleteVideo(e, id) {
+    e.stopPropagation();
+    videos = videos.filter(v => v.id !== id);
+    if (currentId === id) {
+      currentId = null;
+      document.getElementById('mainVideo').src = '';
+      document.getElementById('videoWrapper').classList.remove('active');
+      document.getElementById('nowPlaying').classList.remove('active');
+    }
+    save();
+    render();
+  }
+
+  function toggleAdmin() {
+    document.getElementById('adminPanel').classList.toggle('open');
+  }
+
+  // Video events
+  const vid = document.getElementById('mainVideo');
+  const npDot = document.getElementById('npDot');
+  const npStatus = document.getElementById('npStatus');
+
+  vid.addEventListener('playing', () => { npStatus.textContent='PLAYING'; npDot.classList.remove('paused'); });
+  vid.addEventListener('pause', () => { npStatus.textContent='PAUSED'; npDot.classList.add('paused'); });
+  vid.addEventListener('ended', () => { npStatus.textContent='ENDED'; npDot.classList.add('paused'); });
+  vid.addEventListener('canplay', () => { npStatus.textContent='PLAYING'; });
+
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cineflix · Poster Maker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#07070f;--card:#0c0c1c;--border:#181830;--text:#ddddf0;--muted:#383858}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:16px}
+.hdr{text-align:center;padding:14px 0 18px}
+.hdr-logo{font-family:'Bebas Neue';font-size:2.5rem;letter-spacing:12px;
+  background:linear-gradient(90deg,#ff3a00,#ffaa00);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text}
+.hdr-sub{font-size:.57rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:2px}
+.grid{display:grid;grid-template-columns:360px 1fr;gap:14px;max-width:1140px;margin:0 auto}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+.sec{font-size:.54rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:12px;margin-top:16px}
+.sec:first-child{margin-top:0}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px}
+.tab{padding:9px 2px;border-radius:8px;border:1px solid var(--border);background:transparent;
+  color:var(--muted);font-family:'Poppins';font-size:.63rem;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.tab.on{background:#181838;color:#fff;border-color:#4444cc}
+.row{display:flex;gap:6px}
+label{display:block;font-size:.6rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin:10px 0 3px}
+input,select{width:100%;background:#050510;border:1px solid var(--border);border-radius:8px;
+  color:var(--text);padding:9px 12px;font-family:'Poppins';font-size:.82rem;outline:none;transition:border .15s}
+input:focus,select:focus{border-color:#ff4400}
+.btn-s{padding:9px 14px;border-radius:8px;border:none;background:linear-gradient(135deg,#cc2200,#ff5500);
+  color:#fff;font-family:'Poppins';font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.res{max-height:200px;overflow-y:auto;margin-top:7px;display:flex;flex-direction:column;gap:4px}
+.res::-webkit-scrollbar{width:3px}.res::-webkit-scrollbar-thumb{background:#222240;border-radius:3px}
+.ri{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;
+  border:1px solid var(--border);background:#050510;cursor:pointer;transition:all .15s}
+.ri:hover{background:#0f0f28;border-color:#3a3a88}.ri.sel{background:#0d0d2a;border-color:#5555ee}
+.ri-img{width:34px;height:50px;object-fit:cover;border-radius:5px;flex-shrink:0;background:#111128}
+.ri-title{font-size:.78rem;font-weight:700;color:#d0d0f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ri-meta{font-size:.62rem;color:#44447a;margin-top:2px}
+.bd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;max-height:220px;overflow-y:auto}
+.bd-grid::-webkit-scrollbar{width:3px}.bd-grid::-webkit-scrollbar-thumb{background:#222240;border-radius:3px}
+.bd-item{aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:2.5px solid transparent;transition:all .18s;background:#111}
+.bd-item img{width:100%;height:100%;object-fit:cover;display:block}
+.bd-item.sel{border-color:#ff4400;box-shadow:0 0 12px rgba(255,68,0,.5)}
+.th-row{display:flex;gap:8px;flex-wrap:wrap;padding:4px 0 6px}
+.th{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:all .18s}
+.th.on{border-color:#fff;box-shadow:0 0 10px rgba(255,255,255,.3);transform:scale(1.12)}
+.gen{width:100%;margin-top:16px;padding:15px;border-radius:10px;
+  background:linear-gradient(135deg,#cc2200,#ff5500);color:#fff;border:none;
+  font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:5px;cursor:pointer;
+  box-shadow:0 4px 24px rgba(200,50,0,.35);transition:opacity .18s}
+.gen:hover{opacity:.87}
+.prev-wrap{background:#050510;border-radius:10px;border:1px solid var(--border);
+  overflow:hidden;display:flex;align-items:center;justify-content:center}
+.prev-wrap img{width:100%;height:100%;object-fit:contain;display:block}
+.ph{text-align:center;color:#1c1c38;font-size:.82rem;line-height:2.2;padding:40px 20px}
+.act-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.act-btn{padding:13px;border-radius:9px;border:1px solid var(--border);background:var(--card);
+  color:var(--text);font-family:'Poppins';font-size:.76rem;font-weight:700;cursor:pointer;transition:all .18s;text-align:center}
+.act-btn:hover{background:#141430;border-color:#3a3acc}
+.act-btn.grn{background:linear-gradient(135deg,#071e0f,#0a2e18);border-color:#1a5530;color:#33ff88}
+.cp{background:#050510;border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:10px}
+.cp-lbl{font-size:.54rem;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.cp-pre{font-family:monospace;font-size:.78rem;color:#aaaacc;white-space:pre-wrap;word-break:break-word;line-height:1.85}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid #ffffff25;
+  border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ep-f{display:none}.ep-f.show{display:block}.hide{display:none}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-logo">CINEFLIX</div>
+  <div class="hdr-sub">Telegram Poster Maker · HD PNG Download</div>
+</div>
+<div class="grid">
+<div class="box">
+  <div class="sec">🎬 Content Type</div>
+  <div class="tabs">
+    <div class="tab on" onclick="setType('movie',this)">🎬 Movie</div>
+    <div class="tab" onclick="setType('tv',this)">📺 Series</div>
+    <div class="tab" onclick="setType('kdrama',this)">🇰🇷 K-Drama</div>
+    <div class="tab" onclick="setType('anime',this)">⛩️ Anime</div>
+  </div>
+  <div class="sec">🔍 TMDB Search</div>
+  <div class="row">
+    <input id="q" placeholder="Movie / Series name..." onkeydown="if(event.key==='Enter')doSearch()"/>
+    <button class="btn-s" onclick="doSearch()">Search</button>
+  </div>
+  <div class="res" id="res"></div>
+  <div id="bd-wrap" class="hide">
+    <div class="sec">🖼️ Official Backdrop Select করো</div>
+    <div class="bd-grid" id="bd-grid"></div>
+  </div>
+  <div class="sec">📋 Details</div>
+  <label>Title</label><input id="f-title" placeholder="e.g. Avengers: Endgame"/>
+  <label>Year</label><input id="f-year" placeholder="2024"/>
+  <label>Rating / 10</label><input id="f-rating" type="number" step=".1" min="0" max="10" value="8.5"/>
+  <label>Genre</label><input id="f-genre" placeholder="Action, Thriller"/>
+  <label>Duration</label><input id="f-dur" placeholder="2h 30m"/>
+  <label>Quality</label>
+  <select id="f-q">
+    <option>4K UHD</option><option selected>1080p FHD</option>
+    <option>720p HD</option><option>480p</option>
+  </select>
+  <label>Cast (optional)</label><input id="f-cast" placeholder="Aamir Khan, Anushka Sharma"/>
+  <label>Storyline (Bengali · 1 line)</label>
+  <div class="row">
+    <input id="f-story" placeholder="Movie select করলে AI auto-translate করবে..."/>
+    <button class="btn-s" id="ai-btn" onclick="aiStory()">🤖 AI</button>
+  </div>
+  <div id="ai-status" style="font-size:.62rem;color:#44447a;margin-top:4px;min-height:14px"></div>
+  <label>Audio</label>
+  <select id="f-audio">
+    <option>Bengali Dubbed Only</option>
+    <option selected>Bengali Dubbed + English</option>
+    <option>Bengali Dubbed + Hindi</option>
+    <option>Bengali + Hindi + English</option>
+    <option>Hindi Dubbed Only</option>
+    <option>Hindi Dubbed + English</option>
+    <option>English Only</option>
+    <option>Multi Audio</option>
+  </select>
+  <div class="ep-f" id="epf">
+    <label>Season</label><input id="f-s" type="number" value="1"/>
+    <label>Latest Episode</label><input id="f-ep" type="number" placeholder="5"/>
+    <label>Total Episodes</label><input id="f-tot" placeholder="12 / Ongoing"/>
+  </div>
+  <div class="sec">🎨 Accent Color</div>
+  <div class="th-row">
+    <div class="th on" style="background:linear-gradient(135deg,#ff3a00,#ff9a00)" onclick="setTh('flame',this)"></div>
+    <div class="th" style="background:linear-gradient(135deg,#0044cc,#00ccff)" onclick="setTh('ocean',this)"></div>
+    <div class="th" style="background:linear-gradient(135deg,#bb7700,#ffcc00)" onclick="setTh('gold',this)"></div>
+    <div class="th" style="background:linear-gradient(135deg,#009944,#00ff88)" onclick="setTh('mint',this)"></div>
+    <div class="th" style="background:linear-gradient(135deg,#cc0055,#ff77bb)" onclick="setTh('rose',this)"></div>
+    <div class="th" style="background:linear-gradient(135deg,#7700cc,#cc66ff)" onclick="setTh('violet',this)"></div>
+    <div class="th" style="background:linear-gradient(135deg,#0088bb,#00ddff)" onclick="setTh('sky',this)"></div>
+    <div class="th" style="background:linear-gradient(135deg,#cc0022,#ff4466)" onclick="setTh('ruby',this)"></div>
+  </div>
+  <label>Bot / Mini App Link</label><input id="f-link" value="t.me/CineflixBot"/>
+  <label>App Name</label><input id="f-app" value="Cineflix"/>
+  <label>Channel Tag</label><input id="f-chan" value="@CineflixOfficial"/>
+  <button class="gen" onclick="gen()">⚡ GENERATE POSTER</button>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+  <div class="box" style="padding:10px">
+    <div class="sec" style="margin-top:0">👁️ Preview · 1280×856 HD</div>
+    <div class="prev-wrap" id="pw" style="aspect-ratio:1280/856">
+      <div class="ph">🎬 Search → Backdrop select করো → Generate চাপো<br><br>Thumbnail আলাদা · Info strip আলাদা</div>
+    </div>
+  </div>
+  <div class="act-row hide" id="acts">
+    <button class="act-btn grn" onclick="dlPNG()">⬇️ Download HD PNG</button>
+    <button class="act-btn" id="cpbtn" onclick="cpPost()">📋 Copy Caption</button>
+  </div>
+  <div class="cp hide" id="cp-panel">
+    <div class="cp-lbl">📋 Telegram Caption</div>
+    <div class="cp-pre" id="cp-txt"></div>
+  </div>
+</div>
+</div>
+<canvas id="cv" style="display:none"></canvas>
+<script>
+const KEY='b445400ff2b0b33483ea4974026293e3';
+const IMGB='https://image.tmdb.org/t/p/';
+const THEMES={
+  flame:{a1:'#ff3a00',a2:'#ff9a00',txt:'#fff'},
+  ocean:{a1:'#0055ff',a2:'#00ccff',txt:'#fff'},
+  gold:{a1:'#cc8800',a2:'#ffcc00',txt:'#111'},
+  mint:{a1:'#009944',a2:'#00ff88',txt:'#fff'},
+  rose:{a1:'#cc0055',a2:'#ff77bb',txt:'#fff'},
+  violet:{a1:'#7700cc',a2:'#cc66ff',txt:'#fff'},
+  sky:{a1:'#0088bb',a2:'#00ddff',txt:'#fff'},
+  ruby:{a1:'#cc0022',a2:'#ff4466',txt:'#fff'},
+};
+const TLBL={movie:'MOVIE',tv:'WEB SERIES',kdrama:'K-DRAMA',anime:'ANIME'};
+const TEMO={movie:'🎬',tv:'📺',kdrama:'🇰🇷',anime:'⛩️'};
+const TAGS={movie:'#Movie',tv:'#WebSeries',kdrama:'#KDrama',anime:'#Anime'};
+let cType='movie',cTheme='flame',lastPost='',selBackdrop='',tmdbOverview='';
+
+function setType(t,el){cType=t;document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');document.getElementById('epf').className=t!=='movie'?'ep-f show':'ep-f';}
+function setTh(t,el){cTheme=t;document.querySelectorAll('.th').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+
+async function doSearch(){
+  const q=document.getElementById('q').value.trim();if(!q)return;
+  const box=document.getElementById('res');
+  box.innerHTML='<div style="color:#44446a;font-size:.76rem;padding:6px"><span class="spin"></span>Searching...</div>';
+  document.getElementById('bd-wrap').classList.add('hide');selBackdrop='';
+  const at=cType==='movie'?'movie':'tv';
+  try{
+    let searchUrl=`https://api.themoviedb.org/3/search/${at}?api_key=${KEY}&query=${encodeURIComponent(q)}&language=en-US`;
+    const d=await fetch(searchUrl).then(r=>r.json());
+    const items=(d.results||[]).slice(0,8);
+    if(!items.length){box.innerHTML='<div style="color:#44446a;font-size:.76rem;padding:6px">কিছু পাওয়া যায়নি 😔</div>';return;}
+    box.innerHTML='';
+    items.forEach(it=>{
+      const title=it.title||it.name||'',year=(it.release_date||it.first_air_date||'').slice(0,4),thumb=it.poster_path?IMGB+'w92'+it.poster_path:'';
+      const d2=document.createElement('div');d2.className='ri';
+      d2.innerHTML=`${thumb?`<img class="ri-img" src="${thumb}" onerror="this.style.opacity=0">`:'<div class="ri-img"></div>'}<div style="min-width:0;flex:1"><div class="ri-title">${title}</div><div class="ri-meta">${year} · ⭐ ${it.vote_average?.toFixed(1)||'N/A'} · ${TLBL[cType]}</div></div>`;
+      d2.onclick=()=>pickItem(it,d2);box.appendChild(d2);
+    });
+  }catch(e){box.innerHTML=`<div style="color:#aa3333;font-size:.76rem;padding:6px">Error: ${e.message}</div>`;}
+}
+
+async function pickItem(it,el){
+  document.querySelectorAll('.ri').forEach(i=>i.classList.remove('sel'));el.classList.add('sel');
+  const at=cType==='movie'?'movie':'tv';
+  try{
+    const d=await fetch(`https://api.themoviedb.org/3/${at}/${it.id}?api_key=${KEY}&language=en-US`).then(r=>r.json());
+    set('f-title',d.title||d.name||'');
+    set('f-rating',d.vote_average?d.vote_average.toFixed(1):'');
+    set('f-year',(d.release_date||d.first_air_date||'').slice(0,4));
+    set('f-genre',(d.genres||[]).map(g=>g.name).join(', '));
+    tmdbOverview=d.overview||'';
+    set('f-story','');
+    const rt=d.runtime?`${Math.floor(d.runtime/60)}h ${d.runtime%60}m`:(d.episode_run_time?.[0]?`~${d.episode_run_time[0]}m/ep`:'');
+    set('f-dur',rt||(d.number_of_seasons?`S${d.number_of_seasons} · ${d.number_of_episodes} eps`:''));
+    const imgs=await fetch(`https://api.themoviedb.org/3/${at}/${it.id}/images?api_key=${KEY}`).then(r=>r.json());
+    const bds=[...(imgs.backdrops||[])].sort((a,b)=>b.vote_average-a.vote_average).slice(0,15);
+    const bdGrid=document.getElementById('bd-grid');bdGrid.innerHTML='';selBackdrop='';
+    if(bds.length){
+      bds.forEach((bd,i)=>{
+        const prev=IMGB+'w780'+bd.file_path,full=IMGB+'original'+bd.file_path;
+        const div=document.createElement('div');div.className='bd-item'+(i===0?' sel':'');
+        div.innerHTML=`<img src="${prev}" loading="lazy">`;
+        div.onclick=()=>{document.querySelectorAll('.bd-item').forEach(b=>b.classList.remove('sel'));div.classList.add('sel');selBackdrop=full;};
+        bdGrid.appendChild(div);if(i===0)selBackdrop=full;
+      });
+      document.getElementById('bd-wrap').classList.remove('hide');
+    }
+  }catch{set('f-title',it.title||it.name||'');set('f-rating',it.vote_average?.toFixed(1)||'');set('f-year',(it.release_date||it.first_air_date||'').slice(0,4));}
+}
+
+async function aiStory(){
+  if(!tmdbOverview){document.getElementById('ai-status').textContent='⚠️ আগে movie search করে select করো';return;}
+  const btn=document.getElementById('ai-btn');
+  const status=document.getElementById('ai-status');
+  btn.disabled=true;btn.textContent='⏳';
+  status.textContent='AI translate করছে...';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:100,
+        messages:[{role:'user',content:`Translate this movie overview into Bengali in exactly 1 short sentence (max 15 words). Only return the Bengali sentence, nothing else:\n\n"${tmdbOverview}"`}]
+      })
+    });
+    const data=await res.json();
+    const txt=data.content?.[0]?.text?.trim()||'';
+    if(txt){set('f-story',txt);status.textContent='✅ Done!';}
+    else{status.textContent='❌ Try again';}
+  }catch(e){status.textContent='❌ Error: '+e.message;}
+  btn.disabled=false;btn.textContent='🤖 AI';
+  setTimeout(()=>{status.textContent=''},3000);
+}
+function get(id){return document.getElementById(id).value.trim()}
+function grad(ctx,x1,y1,x2,y2,stops){const g=ctx.createLinearGradient(x1,y1,x2,y2);stops.forEach(([p,c])=>g.addColorStop(p,c));return g;}
+function rr(ctx,x,y,w,h,r,fill,stroke){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();}
+}
+function loadImg(url){
+  return new Promise((res,rej)=>{
+    const img=new Image();img.crossOrigin='anonymous';
+    img.onload=()=>res(img);
+    img.onerror=()=>{const p=new Image();p.crossOrigin='anonymous';p.onload=()=>res(p);p.onerror=rej;p.src='https://images.weserv.nl/?url='+encodeURIComponent(url)+'&output=jpg&w=1280&h=720&fit=cover';};
+    img.src=url;
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   CANVAS  1280 × 856
+   ┌────────────────────────────────────────┐
+   │                                        │
+   │   ZONE 1: THUMBNAIL  1280×720          │  pure image
+   │   tiny brand badge top-left            │  no text blocking art
+   │   tiny type badge top-right            │
+   │                                        │
+   ├────────────────────────────────────────┤  y=720
+   │ ZONE 2: INFO STRIP  1280×136           │  dark #0d0d1c
+   │ [✦ NEW MOVIE]  Title (big white)       │  row 1
+   │ [▶ WATCH NOW  t.me/…]  [👇🏻] [⬇️]   │  row 2
+   └────────────────────────────────────────┘
+   ═══════════════════════════════════════════════════════ */
+async function gen(){
+  const T=THEMES[cTheme];
+  const W=1280,IMG_H=720,STRIP_H=136,H=IMG_H+STRIP_H;
+  const cv=document.getElementById('cv');
+  cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');
+
+  const title  =get('f-title')||'UNTITLED';
+  const rating =get('f-rating')||'8.5';
+  const year   =get('f-year');
+  const genre  =get('f-genre');
+  const dur    =get('f-dur');
+  const qual   =get('f-q');
+  const audio  =get('f-audio');
+  const appName=get('f-app')||'Cineflix';
+  const link   =get('f-link')||'t.me/CineflixBot';
+  const chan   =get('f-chan')||'@CineflixOfficial';
+  const season =get('f-s')||'1';
+  const ep     =get('f-ep');
+  const totEp  =get('f-tot');
+  const isMovie=cType==='movie';
+
+  /* ══ ZONE 1: THUMBNAIL — 100% clean image ══ */
+  ctx.fillStyle='#080814';
+  ctx.fillRect(0,0,W,IMG_H);
+
+  if(selBackdrop){
+    try{
+      const img=await loadImg(selBackdrop);
+      const scale=Math.max(W/img.width,IMG_H/img.height);
+      const sw=W/scale,sh=IMG_H/scale;
+      const sx=(img.width-sw)/2,sy=(img.height-sh)/2;
+      ctx.drawImage(img,sx,sy,sw,sh,0,0,W,IMG_H);
+    }catch{drawPH(ctx,W,IMG_H,T);}
+  }else{drawPH(ctx,W,IMG_H,T);}
+
+  /* No corner shadows — clean image */
+
+  /* TOP-LEFT: App brand — tiny, subtle */
+  ctx.save();
+  ctx.font='700 16px Poppins,sans-serif';
+  const bTxt=appName.toUpperCase();
+  const bW=ctx.measureText(bTxt).width+22;
+  rr(ctx,18,16,bW,30,15,'rgba(0,0,0,0.5)');
+  ctx.fillStyle=T.a1;ctx.fillRect(18,16,3,30);
+  ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.textAlign='left';
+  ctx.fillText(bTxt,30,16+15);
+  ctx.restore();
+
+  /* TOP-RIGHT: Type badge */
+  ctx.save();
+  ctx.font='700 15px Poppins,sans-serif';
+  const tLabel=TLBL[cType];
+  const tW=ctx.measureText(tLabel).width+22;
+  const tBg=grad(ctx,W-tW-18,0,W-18,0,[[0,T.a1],[1,T.a2]]);
+  rr(ctx,W-tW-18,16,tW,30,15,tBg);
+  ctx.fillStyle=T.txt||'#fff';ctx.textBaseline='middle';ctx.textAlign='center';
+  ctx.fillText(tLabel,W-tW/2-18,16+15);
+  ctx.restore();
+
+  /* ══ ZONE 2: INFO STRIP ══ */
+  // Dark background
+  ctx.fillStyle='#0d0d1c';
+  ctx.fillRect(0,IMG_H,W,STRIP_H);
+
+  // Top accent line
+  const acLine=grad(ctx,0,IMG_H,W,IMG_H,[[0,T.a1],[0.5,T.a2],[1,T.a1]]);
+  ctx.fillStyle=acLine;ctx.fillRect(0,IMG_H,W,4);
+
+  const PX=34;
+
+  /* ── SINGLE ROW: left=JUST ADDED, center=WATCH NOW ── */
+  const R1Y=IMG_H+4;
+  const BADGE_H=STRIP_H-8;
+  const BTN_Y=R1Y;
+  const BTN_H=BADGE_H;
+
+  // LEFT SIDE — two line: small "⚡ JUST ADDED" top, big "MOVIE/SERIES" bottom
+  ctx.save();
+  const BADGE_LABELS={movie:'MOVIE',tv:'SERIES',kdrama:'K-DRAMA',anime:'ANIME'};
+  const typeLabel=BADGE_LABELS[cType];
+  const addedText=isMovie?'⚡ JUST ADDED':ep?`⚡ S${season} · EP ${ep}${totEp?' / '+totEp:''} ADDED`:`⚡ S${season} JUST ADDED`;
+
+  // LEFT: "⚡ JUST ADDED" — measure first, draw clipped to left quarter
+  ctx.font="800 26px Poppins,sans-serif";
+  ctx.fillStyle=T.a2;ctx.textAlign='left';ctx.textBaseline='middle';
+  ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=8;
+  // Clip to left 30% so never overlaps WATCH NOW
+  ctx.save();
+  ctx.beginPath();ctx.rect(0, R1Y, W*0.30, BADGE_H);ctx.clip();
+  ctx.fillText(addedText, PX, R1Y + BADGE_H/2);
+  ctx.restore();
+  ctx.shadowBlur=0;
+  ctx.restore();
+
+  // CENTER: WATCH NOW — big, clipped to right 70% center area
+  ctx.save();
+  ctx.font="900 76px 'Bebas Neue',cursive";
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.shadowColor=T.a1;ctx.shadowBlur=22;
+  ctx.fillText('WATCH  NOW', W/2, R1Y + BADGE_H/2);
+  ctx.shadowBlur=0;
+  const BADGE_END=PX+280;
+  ctx.restore();
+
+
+
+  /* ── Render ── */
+  const pw=document.getElementById('pw');
+  const di=document.createElement('img');
+  di.src=cv.toDataURL('image/png',1.0);
+  di.style.cssText='width:100%;height:100%;object-fit:contain;display:block';
+  pw.innerHTML='';pw.appendChild(di);
+  document.getElementById('acts').classList.remove('hide');
+
+  /* ── Caption ── */
+  const genreTag=genre?'#'+genre.split(',')[0].trim().replace(/\s+/g,''):'';
+  const hashtags=[`#${appName.replace(/\s+/g,'')}`,TAGS[cType],genreTag,chan].filter(Boolean).join(' ');
+  const epLine=!isMovie&&ep?`\n✅ S${season} · EP ${ep}${totEp?' / '+totEp:''} Added!`:'';
+  const g1=genre?genre.split(',')[0].trim():'';
+  const cast=get('f-cast');
+  const story=get('f-story');
+  // Short cast: max 2 names
+  const castShort=cast?cast.split(',').slice(0,2).map(c=>c.trim()).join(', '):'';
+  const infoLines=[
+    `⭐ Rating   : ${parseFloat(rating).toFixed(1)} / 10`,
+    `🎯 Quality  : ${qual}`,
+    `🔊 Audio    : ${audio}`,
+    g1?`🎭 Genre    : ${g1}`:'',
+    dur?`⏱ Duration : ${dur}`:'',
+    castShort?`🎥 Cast      : ${castShort}`:'',
+  ].filter(Boolean);
+  const block=infoLines.map(l=>`│  ${l}`).join('\n');
+  const storyLine=story?`\n📖 ${story}\n`:'';
+  lastPost=
+`${TEMO[cType]} ${title}${year?' ('+year+')':''}${epLine||' — Now Available! ✅'}
+
+${block}
+${storyLine}
+${hashtags}`;
+  document.getElementById('cp-txt').textContent=lastPost;
+  document.getElementById('cp-panel').classList.remove('hide');
+}
+
+function drawPH(ctx,W,H,T){
+  const g=ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,T.a1+'33');g.addColorStop(1,T.a2+'11');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.font='80px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🎬',W/2,H/2-20);
+  ctx.font='500 18px Poppins';ctx.fillStyle='rgba(255,255,255,.1)';ctx.fillText('Backdrop select করো',W/2,H/2+55);
+}
+function dlPNG(){
+  const a=document.createElement('a');
+  a.download=(get('f-title')||'cineflix')+'-HD.png';
+  a.href=document.getElementById('cv').toDataURL('image/png',1.0);a.click();
+}
+function cpPost(){
+  if(!lastPost)return;
+  navigator.clipboard.writeText(lastPost).then(()=>{
+    const b=document.getElementById('cpbtn'),o=b.textContent;
+    b.textContent='✅ Copied!';b.style.color='#33ff88';
+    setTimeout(()=>{b.textContent=o;b.style.color=''},2000);
+  });
+}
+</script>
+</body>
+</html>
